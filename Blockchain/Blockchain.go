@@ -1,8 +1,20 @@
 package Blockchain
 
 import (
+  "fmt"
+  "encoding/gob"
+  "time"
   b "../Block"
+  p1 "../PersInfo"
 )
+
+var (
+  PersInfoChain Blockchain
+)
+
+func RegisterAllGobInterfaces()  {
+  gob.Register(p1.PersInfo{})
+}
 
 type Blockchain struct {
   Head *b.Block
@@ -12,19 +24,21 @@ type Blockchain struct {
 
 func (a *Blockchain) AddBlock(block b.Block) {
 	newBlock := block
-	newBlock.No = a.NoOfBlocks++
+	newBlock.No = a.NoOfBlocks
+  a.NoOfBlocks += 1
 	newBlock.Time = time.Now().String()
+  fmt.Println(newBlock)
 
 	if a.Head == nil && a.Tail == nil {
 		newBlock.PrevHash = "0000000000000000000000000000000000000000000000000000000000000000"
-		newBlock.Hash = newBlock.GetBlockHash()
+		newBlock.Hash = newBlock.GenerateBlockHash()
 		newBlock.Next = nil
 		newBlock.Prev = nil
 		a.Head = &newBlock
 		a.Tail = &newBlock
 	} else {
-		newBlock.PrevHash = a.Tail.GetBlockHash()
-		newBlock.Hash = newBlock.GetBlockHash()
+		newBlock.PrevHash = a.Tail.Hash
+		newBlock.Hash = newBlock.GenerateBlockHash()
 		newBlock.Next = nil
 		newBlock.Prev = a.Tail
 		a.Tail.Next = &newBlock
@@ -53,6 +67,17 @@ func PrintBlockchain(a Blockchain) {
 	}
 }
 
+func (a Blockchain) FindBlock(hash string) bool {
+	tempBlock := a.Head
+	for tempBlock != nil {
+		if tempBlock.Hash == hash {
+			return true
+		}
+		tempBlock = tempBlock.Next
+	}
+	return false
+}
+
 /*
 
 func (a Blockchain) ReversePrintBlockchain() {
@@ -68,7 +93,7 @@ func VerifyBlockchain(a Blockchain) bool {
 	if a.Head != nil {
 		tempBlock := a.Head.Next
 		for tempBlock != nil {
-			if tempBlock.PrevHash != tempBlock.Prev.GetBlockHash() {
+			if tempBlock.PrevHash != tempBlock.Prev.GenerateBlockHash() {
 				log.Printf("Blockchain was tempered. Security Compromised ☠")
 				return false
 			}
