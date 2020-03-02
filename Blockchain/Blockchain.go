@@ -62,7 +62,7 @@ func PrintBlockchain(a Blockchain) {
 	tempBlock := a.Head
 	fmt.Printf("\t\t<=== Blockchain ===>\n")
 	for tempBlock != nil {
-		tempBlock.PrintBlock()
+    fmt.Println(tempBlock)
 		tempBlock = tempBlock.Next
 	}
 }

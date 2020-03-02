@@ -7,12 +7,14 @@ import (
   p1 "../PersInfo"
   b1 "../Block"
   c1 "../Blockchain"
+  buff1 "../BlockBuffer"
 )
 
 // IMPORTANT PROBLEMS TO SOLVE
 
 // Correct GenerateBlockHash function in ../Block
 // Remove blk.PrevHash = ""
+// Blockchain printing issue
 
 
 var ownAddr = flag.String("addr", ":10000", "Own Address")
@@ -23,6 +25,7 @@ func main() {
 
   n1.OwnAddress = *ownAddr
   n1.DefaultPeer = *defaultPeer
+
   fmt.Println("Own Address:", n1.OwnAddress)
   fmt.Println("Default Peer:", n1.DefaultPeer)
 
@@ -35,6 +38,7 @@ func main() {
     fmt.Println("Enter 2 to view all known nodes")
     fmt.Println("Enter 3 to add a new PersInfo Block")
     fmt.Println("Enter 4 to view PersChain")
+    fmt.Println("Enter 5 to view the BlockBuffer")
     fmt.Scanln(&input)
 
     switch input {
@@ -49,9 +53,12 @@ func main() {
       var input p1.PersInfo
       input.PersInfoInput()
       blk := b1.GenerateBlock("PersInfo", input)
-      n1.SendBlock(blk)
+//      blk.PrintBlock()
+      n1.BroadCastBlock(blk)
     case 4:
       c1.PrintBlockchain(c1.PersInfoChain)
+    case 5:
+      buff1.BlkBuffer.PrintBlockBuffer()
     default:
       fmt.Println("Invalid Command Entered")
     }

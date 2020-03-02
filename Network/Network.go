@@ -5,11 +5,13 @@ import (
 	"log"
 	"net"
 	"os"
+	"sync"
   "bytes"
   "strconv"
   "encoding/gob"
   b1 "../Block"
   c1 "../Blockchain"
+	buff1 "../BlockBuffer"
 )
 
 const (
@@ -52,6 +54,7 @@ func StartServer() {
 // FUNCTIONS UNDER CONSTRUCTION BEGINS...
 
 func HandleBlock(conn net.Conn, data []byte) {
+
 	var buff bytes.Buffer
 	_, err := buff.Write(data)
 	if err != nil {
@@ -65,12 +68,13 @@ func HandleBlock(conn net.Conn, data []byte) {
 		log.Println(err)
 	}
 
-	for _, blk := range blkList.BlockList {
-		hash := blk.GenerateBlockHash()
-		found := c1.PersInfoChain.FindBlock(hash)
-    fmt.Println(found)
+	for i, blk := range blkList.BlockList {
+		hash := buff1.GenerateHash(blk)
+		found, _ := buff1.BlkBuffer.FindBlock(hash)
+		fmt.Println(found, i)
 		if !found {
-			c1.PersInfoChain.AddBlock(blk)
+			fmt.Println(hash)
+			buff1.BlkBuffer.InsertBlock(blk)
 			BroadCastBlock(blk)
 		}
 	}
@@ -110,7 +114,7 @@ func turnOnServer(conn net.Listener) {
 			continue
 		}
 
-		go handleConnection(ln)
+		handleConnection(ln)
 	}
 }
 
