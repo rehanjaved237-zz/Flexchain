@@ -3,10 +3,14 @@ package main
 import (
   "fmt"
   "flag"
+  "log"
+  "net/http"
+  "html/template"
   n1 "../Network"
   p1 "../PersInfo"
   b1 "../Block"
   c1 "../Blockchain"
+  w1 "../Web"
   buff1 "../BlockBuffer"
 )
 
@@ -19,16 +23,62 @@ import (
 
 var ownAddr = flag.String("addr", ":10000", "Own Address")
 var defaultPeer = flag.String("dpeer", ":10000", "Default Peer")
+var frontEnd = flag.String("fend", ":12000", "Front End")
+
+var (
+	templates = template.Must(template.ParseFiles("index.html", "myHtml.html", "Home.html", "Login.html"))
+)
+
+func DefaultHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hi there, I love %s!", r.URL.Path[1:])
+}
+
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+  err := templates.ExecuteTemplate(w, "Login.html", nil)
+  if err != nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+  }
+}
+
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
+  err := templates.ExecuteTemplate(w, "Home.html", nil)
+  if err != nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+  }
+}
+
+func myHtmlHandler(w http.ResponseWriter, r *http.Request) {
+	err := templates.ExecuteTemplate(w, "myHtml.html", nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func runHandlers()  {
+
+  http.HandleFunc("/", DefaultHandler)
+  http.HandleFunc("/Home/", HomeHandler)
+  http.HandleFunc("/Login/", LoginHandler)
+  http.HandleFunc("/myHtml/", myHtmlHandler)
+
+  http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
+
+  log.Fatal(http.ListenAndServe(w1.FrontEnd , nil))
+}
 
 func main() {
   flag.Parse()
 
   n1.OwnAddress = *ownAddr
   n1.DefaultPeer = *defaultPeer
+  w1.FrontEnd = *frontEnd
+
 
   fmt.Println("Own Address:", n1.OwnAddress)
   fmt.Println("Default Peer:", n1.DefaultPeer)
+  fmt.Println("Front End:", w1.FrontEnd)
 
+  go runHandlers()
   n1.StartServer()
 
   input := 0

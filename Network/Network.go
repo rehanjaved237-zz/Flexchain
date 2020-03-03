@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 	"os"
-	"sync"
+//	"sync"
   "bytes"
   "strconv"
   "encoding/gob"

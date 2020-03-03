@@ -2,7 +2,7 @@ package BlockBuffer
 
 import (
   "fmt"
-  "sync"
+//  "sync"
   "crypto/sha256"
   "encoding/hex"
   "encoding/json"
