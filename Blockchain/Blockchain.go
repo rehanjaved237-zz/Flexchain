@@ -5,15 +5,19 @@ import (
   "encoding/gob"
   "time"
   b "../Block"
+  c1 "../Course"
   p1 "../PersInfo"
+  s1 "../Student"
 )
 
 var (
-  PersInfoChain Blockchain
+  Chain1 Blockchain
 )
 
-func RegisterAllGobInterfaces()  {
+func RegisterAllGobInterfaces() {
+  gob.Register(c1.Course{})
   gob.Register(p1.PersInfo{})
+  gob.Register(s1.Student{})
 }
 
 type Blockchain struct {

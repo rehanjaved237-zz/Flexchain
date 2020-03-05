@@ -5,13 +5,13 @@ import (
 	"log"
 	"net"
 	"os"
-//	"sync"
-  "bytes"
-  "strconv"
-  "encoding/gob"
-  b1 "../Block"
-  c1 "../Blockchain"
+	//	"sync"
+	b1 "../Block"
 	buff1 "../BlockBuffer"
+	c1 "../Blockchain"
+	"bytes"
+	"encoding/gob"
+	"strconv"
 )
 
 const (
@@ -20,9 +20,10 @@ const (
 )
 
 var (
-	OwnAddress  string
-	DefaultPeer string
-	KnownNodes  = map[string]string{}
+	OwnAddress      string
+	DefaultPeer     string
+	DefaultDatabase string
+	KnownNodes      = map[string]string{}
 )
 
 type Addr struct {
@@ -35,7 +36,7 @@ type BlockSender struct {
 }
 
 func StartServer() {
-  c1.RegisterAllGobInterfaces()
+	c1.RegisterAllGobInterfaces()
 
 	conn, err := net.Listen(Network, OwnAddress)
 	if err != nil {
@@ -69,13 +70,24 @@ func HandleBlock(conn net.Conn, data []byte) {
 	}
 
 	for i, blk := range blkList.BlockList {
-		hash := buff1.GenerateHash(blk)
-		found, _ := buff1.BlkBuffer.FindBlock(hash)
-		fmt.Println(found, i)
-		if !found {
-			fmt.Println(hash)
-			buff1.BlkBuffer.InsertBlock(blk)
-			BroadCastBlock(blk)
+		if blk.Status == false {
+			hash := buff1.GenerateHash(blk)
+			found, _ := buff1.BlkBuffer.FindBlock(hash)
+			fmt.Println(found, i)
+			if !found {
+				fmt.Println(hash)
+				buff1.BlkBuffer.InsertBlock(blk)
+				BroadCastBlock(blk)
+			}
+		} else {
+			hash := buff1.GenerateHash(blk)
+			found := c1.Chain1.FindBlock(hash)
+			fmt.Println(found)
+			if !found {
+				fmt.Println(hash)
+				c1.Chain1.AddBlock(blk)
+				BroadCastBlock(blk)
+			}
 		}
 	}
 }
@@ -95,16 +107,6 @@ func SendBlock(address string, block b1.Block) {
 }
 
 // FUNCTIONS UNDER CONSTRUCTION ENDS...
-
-
-
-
-
-
-
-
-
-
 
 func turnOnServer(conn net.Listener) {
 	for {
@@ -132,9 +134,9 @@ func handleConnection(conn net.Conn) {
 	switch cmd {
 	case "addr":
 		HandleAddr(conn, data[CommandLength:])
-  case "block":
-    HandleBlock(conn, data[CommandLength:])
-  case "askaddr":
+	case "block":
+		HandleBlock(conn, data[CommandLength:])
+	case "askaddr":
 		HandleAskAddress(conn, data[CommandLength:])
 	default:
 		fmt.Println("Unknown Command Found")

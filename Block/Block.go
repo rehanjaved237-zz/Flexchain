@@ -9,6 +9,7 @@ import (
 )
 
 type Block struct {
+  Status bool
   No int
   Name string
   Miner string
@@ -21,7 +22,7 @@ type Block struct {
 }
 
 func GenerateBlock(name string, cont interface{}) Block {
-  blk := Block{No: 0, Name: name, Miner: "", Content: cont, Time: time.Now().String(), Hash: "", PrevHash: "", Prev: nil, Next: nil}
+  blk := Block{Status: false, No: 0, Name: name, Miner: "", Content: cont, Time: time.Now().String(), Hash: "", PrevHash: "", Prev: nil, Next: nil}
   blk.Hash = blk.GenerateBlockHash()
   return blk
 }
