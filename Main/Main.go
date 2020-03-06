@@ -8,6 +8,7 @@ import (
   "net/http"
   "html/template"
 //  a1 "../Account"
+  std1 "../Student"
   cour1 "../Course"
   n1 "../Network"
   p1 "../PersInfo"
@@ -149,6 +150,43 @@ func HodOfferCourseHandler(w http.ResponseWriter, r *http.Request) {
   if err != nil {
     http.Error(w, err.Error(), http.StatusInternalServerError)
   }
+}
+
+func HodAddStudent1Handler(w http.ResponseWriter, r *http.Request) {
+  if r.Method == "GET" {
+		fmt.Fprintf(w, "Error aa gaya bhai.. yaar ye get function call kar raha hai.. html mein yakeenan koi masla hai")
+		fmt.Fprintf(w, "Get function called")
+	} else {
+    r.ParseForm()
+
+    name := r.FormValue("Name")
+		fatherName := r.FormValue("FatherName")
+    cnic := r.FormValue("CNIC")
+		phone := r.FormValue("Phone")
+		department := r.FormValue("Department")
+    email := r.FormValue("Email")
+
+    fmt.Println("Name:", name)
+    fmt.Println("Father Name:", fatherName)
+    fmt.Println("CNIC:", cnic)
+    fmt.Println("Phone:", phone)
+    fmt.Println("Department:", department)
+    fmt.Println("Email:", email)
+
+    newStudent := std1.Student {
+      Name: name,
+      FatherName: fatherName,
+      CNIC: cnic,
+      Phone: phone,
+      Department: department,
+      Email: email,
+    }
+
+    blk := b1.GenerateBlock("Student", newStudent)
+
+    n1.BroadCastBlock(blk)
+	}
+  http.Redirect(w, r, "/hod/", http.StatusSeeOther)
 }
 
 func HodOfferCourse1Handler(w http.ResponseWriter, r *http.Request) {
@@ -337,6 +375,7 @@ func runHandlers()  {
   http.HandleFunc("/student/", StudentHandler)
   http.HandleFunc("/hod/", HODHandler)
   http.HandleFunc("/hodaddstudent/", HodAddStudentHandler)
+  http.HandleFunc("/hodaddstudent1/", HodAddStudent1Handler)
   http.HandleFunc("/hodaddinstructor/", HodAddInstructorHandler)
   http.HandleFunc("/hodoffercourse/", HodOfferCourseHandler)
   http.HandleFunc("/hodoffercourse1/", HodOfferCourse1Handler)

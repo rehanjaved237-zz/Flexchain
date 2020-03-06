@@ -206,37 +206,42 @@
                                         <div class="row">
                                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                                                 <div class="review-content-section">
-                                                	<p>Upload Student's Photo</p>
-                                                    <input type="file" name="Upload">
-                                                    <br>
+
+                                                  <form method="POST" action="/hodaddstudent1/">
                                                     <div class="input-group mg-b-pro-edt">
                                                         <span class="input-group-addon"></span>
-                                                        <input type="text" class="form-control" placeholder="Student's Name">
+                                                        <input type="text" class="form-control" id="Name" name="Name" placeholder="Student's Name">
                                                     </div>
                                                     <div class="input-group mg-b-pro-edt">
                                                         <span class="input-group-addon"></span>
-                                                        <input type="text" class="form-control" placeholder="Student's Father Name">
+                                                        <input type="text" class="form-control" id="FatherName" name="FatherName" placeholder="Student's Father Name">
                                                     </div>
                                                     <div class="input-group mg-b-pro-edt">
                                                         <span class="input-group-addon"></span>
-                                                        <input type="text" class="form-control" placeholder="Student's CNIC">
+                                                        <input type="text" class="form-control" id="CNIC" name="CNIC" placeholder="Student's CNIC">
                                                     </div>
                                                     <div class="input-group mg-b-pro-edt">
                                                         <span class="input-group-addon"></span>
-                                                        <input type="text" class="form-control" placeholder="Student's Phone">
+                                                        <input type="text" class="form-control" id="Department" name="Department" placeholder="Student's Department">
                                                     </div>
                                                     <div class="input-group mg-b-pro-edt">
                                                         <span class="input-group-addon"></span>
-                                                        <input type="text" class="form-control" placeholder="Student's Department">
+                                                        <input type="text" class="form-control" id="Phone" name="Phone" placeholder="Student's Phone">
                                                     </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                                <div class="text-center custom-pro-edt-ds">
-                                                    <button style= "margin-left:0%; width: 100%;" type="button" class="btn btn-custon-four btn-success">Add Student</button>
-														</button>
+                                                    <div class="input-group mg-b-pro-edt">
+                                                        <span class="input-group-addon"></span>
+                                                        <input type="text" class="form-control" id="Email" name="Email" placeholder="Student's Email">
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                                            <div class="text-center custom-pro-edt-ds">
+                                                                <input style= "margin-left:0%; width: 25%;" type="submit" class="btn btn-custon-four btn-success" value="Offer Course" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                  </form>
                                                 </div>
                                             </div>
                                         </div>
