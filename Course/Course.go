@@ -1,9 +1,10 @@
 package Course
 
 type Course struct {
-  CourseName string
-  CourseDescription string
-  CreditHours string
-  Semester string
-  AssignedTeacher string
+	CourseCode        string
+	CourseName        string
+	CourseDescription string
+	CreditHours       string
+	Semester          string
+	AssignedTeacher   string
 }

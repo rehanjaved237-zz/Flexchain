@@ -43,6 +43,8 @@ var (
      "HODAddInstructor.html",
      "HODOfferCourse.html",
      "HODMineHistory.html",
+     "BlockList.html",
+     "TeacherCourses.html",
      ))
 )
 
@@ -152,12 +154,14 @@ func HodOfferCourse1Handler(w http.ResponseWriter, r *http.Request) {
 	} else {
     r.ParseForm()
 
+    courseCode := r.FormValue("CourseCode")
 		courseName := r.FormValue("CourseName")
     courseDescription := r.FormValue("CourseDescription")
 		creditHrs := r.FormValue("CreditHrs")
 		semester := r.FormValue("Semester")
     assignedTeacher := r.FormValue("AssignedTeacher")
 
+    fmt.Println("Course Code:", courseCode)
     fmt.Println("Course Name:", courseName)
     fmt.Println("Course Description:", courseDescription)
     fmt.Println("Credit Hours:", creditHrs)
@@ -165,6 +169,7 @@ func HodOfferCourse1Handler(w http.ResponseWriter, r *http.Request) {
     fmt.Println("Assigned Teacher:", assignedTeacher)
 
     newCourse := cour1.Course {
+      CourseCode: courseCode,
       CourseName: courseName,
       CourseDescription: courseDescription,
       CreditHours: creditHrs,
@@ -193,6 +198,21 @@ func HodMineHistoryHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
+func TeacherCoursesHandler(w http.ResponseWriter, r *http.Request) {
+  fmt.Println("BlockListHandler Run Successfully")
+  data := struct {
+    Port string
+    Chain []b1.Block
+  }{
+    w1.FrontEnd,
+    c1.Chain1.FilterBlockchain("Course"),
+  }
+  err := templates.ExecuteTemplate(w, "TeacherCourses.html", data)
+  if err != nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+  }
+}
+
 func AddToBlockchainHandler(w http.ResponseWriter, r *http.Request) {
   fmt.Println("AddToBlockchainHandler Run")
   hash := r.URL.Path[len("/addtoblockchain/"):]
@@ -208,7 +228,7 @@ func AddToBlockchainHandler(w http.ResponseWriter, r *http.Request) {
   } else {
     fmt.Println("Block Not Found")
   }
-
+  http.Redirect(w, r, "/hod/", http.StatusSeeOther)
 }
 
 func RemoveFromBlockBufferHandler(w http.ResponseWriter, r *http.Request) {
@@ -218,12 +238,27 @@ func RemoveFromBlockBufferHandler(w http.ResponseWriter, r *http.Request) {
   status, index := buff1.BlkBuffer.FindBlock(hash)
   if status == true {
     fmt.Println("Block Found")
-    _, blk := buff1.BlkBuffer.RemoveBlock(index)
-    blk.Status = true
+    _, _ = buff1.BlkBuffer.RemoveBlock(index)
+    n1.BroadCastRemoveBlockBuffer(hash)
   } else {
     fmt.Println("Block Not Found")
   }
+  http.Redirect(w, r, "/hod/", http.StatusSeeOther)
+}
 
+func BlocklistHandler(w http.ResponseWriter, r *http.Request) {
+  fmt.Println("BlockListHandler Run Successfully")
+  data := struct {
+    Port string
+    Chain []b1.Block
+  }{
+    w1.FrontEnd,
+    c1.Chain1.SliceBlockchain(),
+  }
+  err := templates.ExecuteTemplate(w, "BlockList.html", data)
+  if err != nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+  }
 }
 
 func loginRequestHandler(w http.ResponseWriter, r *http.Request) {
@@ -259,6 +294,8 @@ func runHandlers()  {
   http.HandleFunc("/hodminehistory/", HodMineHistoryHandler)
   http.HandleFunc("/addtoblockchain/", AddToBlockchainHandler)
   http.HandleFunc("/removefromblockbuffer/", RemoveFromBlockBufferHandler)
+  http.HandleFunc("/blocklist/", BlocklistHandler)
+  http.HandleFunc("/teachercourses/", TeacherCoursesHandler)
 
   http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 

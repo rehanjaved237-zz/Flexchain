@@ -1,37 +1,37 @@
 package Blockchain
 
 import (
-  "fmt"
-  "encoding/gob"
-  "time"
-  b "../Block"
-  c1 "../Course"
-  p1 "../PersInfo"
-  s1 "../Student"
+	"encoding/gob"
+	"fmt"
+	"time"
+
+	b "../Block"
+	c1 "../Course"
+	p1 "../PersInfo"
+	s1 "../Student"
 )
 
 var (
-  Chain1 Blockchain
+	Chain1 Blockchain
 )
 
 func RegisterAllGobInterfaces() {
-  gob.Register(c1.Course{})
-  gob.Register(p1.PersInfo{})
-  gob.Register(s1.Student{})
+	gob.Register(c1.Course{})
+	gob.Register(p1.PersInfo{})
+	gob.Register(s1.Student{})
 }
 
 type Blockchain struct {
-  Head *b.Block
-  Tail *b.Block
-  NoOfBlocks int
+	Head       *b.Block
+	Tail       *b.Block
+	NoOfBlocks int
 }
 
 func (a *Blockchain) AddBlock(block b.Block) {
 	newBlock := block
 	newBlock.No = a.NoOfBlocks
-  a.NoOfBlocks += 1
 	newBlock.Time = time.Now().String()
-  fmt.Println(newBlock)
+	fmt.Println(newBlock)
 
 	if a.Head == nil && a.Tail == nil {
 		newBlock.PrevHash = "0000000000000000000000000000000000000000000000000000000000000000"
@@ -62,11 +62,23 @@ func (a *Blockchain) SliceBlockchain() []b.Block {
 	return ls1
 }
 
+func (a Blockchain) FilterBlockchain(filter string) []b.Block {
+	nodePtr := a.Tail
+	var ls1 []b.Block
+	for nodePtr != nil {
+		if nodePtr.Name == filter {
+			ls1 = append(ls1, *nodePtr)
+		}
+		nodePtr = nodePtr.Prev
+	}
+	return ls1
+}
+
 func PrintBlockchain(a Blockchain) {
 	tempBlock := a.Head
 	fmt.Printf("\t\t<=== Blockchain ===>\n")
 	for tempBlock != nil {
-    fmt.Println(tempBlock)
+		fmt.Println(tempBlock)
 		tempBlock = tempBlock.Next
 	}
 }
