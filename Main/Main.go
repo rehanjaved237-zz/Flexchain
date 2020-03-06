@@ -4,10 +4,10 @@ import (
   "fmt"
   "flag"
   "log"
-  "net"
+//  "net"
   "net/http"
   "html/template"
-  a1 "../Account"
+//  a1 "../Account"
   cour1 "../Course"
   n1 "../Network"
   p1 "../PersInfo"
@@ -42,6 +42,7 @@ var (
      "HODAddStudent.html",
      "HODAddInstructor.html",
      "HODOfferCourse.html",
+     "HODMineHistory.html",
      ))
 )
 
@@ -175,6 +176,54 @@ func HodOfferCourse1Handler(w http.ResponseWriter, r *http.Request) {
 
     n1.BroadCastBlock(blk)
 	}
+  http.Redirect(w, r, "/hod/", http.StatusSeeOther)
+}
+
+func HodMineHistoryHandler(w http.ResponseWriter, r *http.Request) {
+  data := struct {
+    Port string
+    BBuffer buff1.BlockBuffer
+  }{
+    w1.FrontEnd,
+    buff1.BlkBuffer,
+  }
+  err := templates.ExecuteTemplate(w, "HODMineHistory.html", data)
+  if err != nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+  }
+}
+
+func AddToBlockchainHandler(w http.ResponseWriter, r *http.Request) {
+  fmt.Println("AddToBlockchainHandler Run")
+  hash := r.URL.Path[len("/addtoblockchain/"):]
+
+  status, index := buff1.BlkBuffer.FindBlock(hash)
+  if status == true {
+
+    _, blk := buff1.BlkBuffer.RemoveBlock(index)
+    n1.BroadCastRemoveBlockBuffer(hash)
+    blk.Status = true
+    n1.BroadCastBlock(blk)
+
+  } else {
+    fmt.Println("Block Not Found")
+  }
+
+}
+
+func RemoveFromBlockBufferHandler(w http.ResponseWriter, r *http.Request) {
+  fmt.Println("RemoveFromBlockBuffer Run")
+  hash := r.URL.Path[len("/removefromblockbuffer"):]
+
+  status, index := buff1.BlkBuffer.FindBlock(hash)
+  if status == true {
+    fmt.Println("Block Found")
+    _, blk := buff1.BlkBuffer.RemoveBlock(index)
+    blk.Status = true
+  } else {
+    fmt.Println("Block Not Found")
+  }
+
 }
 
 func loginRequestHandler(w http.ResponseWriter, r *http.Request) {
@@ -190,47 +239,7 @@ func loginRequestHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("username:", username)
 		fmt.Println("password:", password)
 		fmt.Println("role:", role)
-
-		conn, err := net.Dial("tcp", n1.DefaultDatabase)
-		if err != nil {
-			log.Println("Error while connecting to the Default Database")
-			log.Println("Error:", err)
-		}
-
-		login := a1.Account{Role: role, Username: username, Password: password}
-
-		byteLogin := n1.GobEncode(login)
-		data := append(n1.CmdToBytes("login"), byteLogin...)
-
-		n, err := conn.Write(data)
-		if err != nil {
-			log.Println("Error while writing on network in login reqest handler")
-		}
-		fmt.Println("No of lines written on default database:", n)
-
-		input := make([]byte, 8192)
-		n, err = conn.Read(input)
-		if err != nil {
-			log.Println("Error while reading from network in login request handler")
-		}
-		fmt.Println("No of bytes read from default database:", n)
-		role = ""
-		role = n1.BytesToCmd(input)
-		fmt.Println("Role:", role)
-		if role == "student" {
-			fmt.Println("student1")
-			http.Redirect(w, r, "/student", http.StatusSeeOther)
-		} else if role == "teacher" {
-			fmt.Println("teacher1")
-			http.Redirect(w, r, "/teacher", http.StatusSeeOther)
-		} else if role == "hod" {
-			fmt.Println("hod1")
-			http.Redirect(w, r, "/hod", http.StatusSeeOther)
-		} else {
-			fmt.Println("Record Not Found")
-			http.Redirect(w, r, "/Login", http.StatusSeeOther)
-		}
-	}
+  }
 }
 
 func runHandlers()  {
@@ -247,6 +256,9 @@ func runHandlers()  {
   http.HandleFunc("/hodaddinstructor/", HodAddInstructorHandler)
   http.HandleFunc("/hodoffercourse/", HodOfferCourseHandler)
   http.HandleFunc("/hodoffercourse1/", HodOfferCourse1Handler)
+  http.HandleFunc("/hodminehistory/", HodMineHistoryHandler)
+  http.HandleFunc("/addtoblockchain/", AddToBlockchainHandler)
+  http.HandleFunc("/removefromblockbuffer/", RemoveFromBlockBufferHandler)
 
   http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 
@@ -294,7 +306,7 @@ func main() {
 //      blk.PrintBlock()
       n1.BroadCastBlock(blk)
     case 4:
-      c1.PrintBlockchain(c1.PersInfoChain)
+      c1.PrintBlockchain(c1.Chain1)
     case 5:
       buff1.BlkBuffer.PrintBlockBuffer()
     default:

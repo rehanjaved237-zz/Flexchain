@@ -48,11 +48,8 @@ func (a *BlockBuffer) RemoveBlock(index int) (string, b1.Block) {
     hash := a.Hash[index]
     body := a.Body[index]
 
-    a.Hash[a.Size-1], a.Hash[index] = a.Hash[index], a.Hash[a.Size-1]
-    a.Body[a.Size-1], a.Body[index] = a.Body[index], a.Body[a.Size-1]
-
-    a.Hash = a.Hash[:a.Size-1]
-    a.Body = a.Body[:a.Size-1]
+    a.Hash = append(a.Hash[:index], a.Hash[index+1:]...)
+    a.Body = append(a.Body[:index], a.Body[index+1:]...)
 
     a.Size -= 1
 

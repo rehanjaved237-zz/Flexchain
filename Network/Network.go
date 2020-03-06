@@ -31,6 +31,10 @@ type Addr struct {
 	DefaultPeer string
 }
 
+type Hashes struct {
+	HashList []string
+}
+
 type BlockSender struct {
 	BlockList []b1.Block
 }
@@ -138,6 +142,8 @@ func handleConnection(conn net.Conn) {
 		HandleBlock(conn, data[CommandLength:])
 	case "askaddr":
 		HandleAskAddress(conn, data[CommandLength:])
+	case "rmblk":
+		HandleRemoveBlock(conn, data[CommandLength:])
 	default:
 		fmt.Println("Unknown Command Found")
 	}
@@ -171,6 +177,33 @@ func HandleAskAddress(conn net.Conn, data []byte) {
 
 	AddToKnownNode(address.AddrList[0])
 	BroadCastNodes()
+}
+
+func HandleRemoveBlock(conn net.Conn, data []byte) {
+	var buff bytes.Buffer
+	_, err := buff.Write(data)
+	if err != nil {
+		log.Println(err)
+	}
+
+	var hsh Hashes
+	dec := gob.NewDecoder(&buff)
+	err = dec.Decode(&hsh)
+	if err != nil {
+		log.Println(err)
+	}
+
+	status, index := buff1.BlkBuffer.FindBlock(hsh.HashList[0])
+  if status == true {
+
+    _, _ = buff1.BlkBuffer.RemoveBlock(index)
+    //BroadCastRemoveBlockBuffer(hsh.HashList[0])
+    //blk.Status = true
+    //BroadCastBlock(blk)
+
+  } else {
+    fmt.Println("Block Not Found")
+  }
 }
 
 func HandleAddr(conn net.Conn, data []byte) {
@@ -213,6 +246,20 @@ func SendNodes(address string) {
 	newAddr := append(CmdToBytes("addr"), byteAddr...)
 
 	SendData(address, newAddr)
+}
+
+func SendRemoveBlockBuffer(address string, hash string) {
+	hsh := Hashes{HashList: []string{hash}}
+	byteHashes := GobEncode(hsh)
+	newHash := append(CmdToBytes("rmblk"), byteHashes...)
+
+	SendData(address, newHash)
+}
+
+func BroadCastRemoveBlockBuffer(hash string) {
+	for _, address := range KnownNodes {
+		go SendRemoveBlockBuffer(address, hash)
+	}
 }
 
 func SendData(address string, data []byte) {
