@@ -27,6 +27,7 @@ import (
 var ownAddr = flag.String("addr", ":10000", "Own Address")
 var defaultPeer = flag.String("dpeer", ":10000", "Default Peer")
 var frontEnd = flag.String("fend", ":12000", "Front End")
+var fileName = flag.String("filename", "blockchain.json", "File where blockchain data is saved")
 var defaultDatabase = flag.String("db", "localhost:8000", "Database is running on this IP")
 
 var (
@@ -45,6 +46,9 @@ var (
      "HODMineHistory.html",
      "BlockList.html",
      "TeacherCourses.html",
+     "StudentEnrolledCourses.html",
+     "StudentEnrollCourse.html",
+     "TeacherGradeStudents.html",
      ))
 )
 
@@ -261,6 +265,51 @@ func BlocklistHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
+func StudentEnrollCourseHandler(w http.ResponseWriter, r *http.Request) {
+  fmt.Println("StudentEnrollCourseHandler Successfully")
+  data := struct {
+    Port string
+    Chain []b1.Block
+  }{
+    w1.FrontEnd,
+    c1.Chain1.FilterBlockchain("Course"),
+  }
+  err := templates.ExecuteTemplate(w, "StudentEnrollCourse.html", data)
+  if err != nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+  }
+}
+
+func TeacherGradeStudentsHandler(w http.ResponseWriter, r *http.Request) {
+  fmt.Println("TeacherGradeStudentsHandler Executed")
+  data := struct {
+    Port string
+    Chain []b1.Block
+  }{
+    w1.FrontEnd,
+    c1.Chain1.FilterBlockchain("Course"),
+  }
+  err := templates.ExecuteTemplate(w, "TeacherGradeStudents.html", data)
+  if err != nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+  }
+}
+
+func StudentEnrolledCoursesHandler(w http.ResponseWriter, r *http.Request) {
+  fmt.Println("StudentEnrolledCoursesHandler Successfully")
+  data := struct {
+    Port string
+    Chain []b1.Block
+  }{
+    w1.FrontEnd,
+    c1.Chain1.FilterBlockchain("Course"),
+  }
+  err := templates.ExecuteTemplate(w, "StudentEnrolledCourses.html", data)
+  if err != nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+  }
+}
+
 func loginRequestHandler(w http.ResponseWriter, r *http.Request) {
   fmt.Println("Yahan tak chala hai")
 	if r.Method == "GET" {
@@ -296,6 +345,9 @@ func runHandlers()  {
   http.HandleFunc("/removefromblockbuffer/", RemoveFromBlockBufferHandler)
   http.HandleFunc("/blocklist/", BlocklistHandler)
   http.HandleFunc("/teachercourses/", TeacherCoursesHandler)
+  http.HandleFunc("/studentenrollcourse/", StudentEnrollCourseHandler)
+  http.HandleFunc("/studentenrolledcourses/", StudentEnrolledCoursesHandler)
+  http.HandleFunc("/teachergradestudents/", TeacherGradeStudentsHandler)
 
   http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 
@@ -309,6 +361,7 @@ func main() {
   n1.DefaultPeer = *defaultPeer
   w1.FrontEnd = *frontEnd
   n1.DefaultDatabase = *defaultDatabase
+  c1.FileName = *fileName
 
   fmt.Println("Own Address:", n1.OwnAddress)
   fmt.Println("Default Peer:", n1.DefaultPeer)

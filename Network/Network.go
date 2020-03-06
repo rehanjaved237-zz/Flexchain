@@ -6,12 +6,13 @@ import (
 	"net"
 	"os"
 	//	"sync"
-	b1 "../Block"
-	buff1 "../BlockBuffer"
-	c1 "../Blockchain"
 	"bytes"
 	"encoding/gob"
 	"strconv"
+
+	b1 "../Block"
+	buff1 "../BlockBuffer"
+	c1 "../Blockchain"
 )
 
 const (
@@ -41,6 +42,8 @@ type BlockSender struct {
 
 func StartServer() {
 	c1.RegisterAllGobInterfaces()
+
+	c1.Chain1 = c1.LoadBlockchain()
 
 	conn, err := net.Listen(Network, OwnAddress)
 	if err != nil {
@@ -194,16 +197,16 @@ func HandleRemoveBlock(conn net.Conn, data []byte) {
 	}
 
 	status, index := buff1.BlkBuffer.FindBlock(hsh.HashList[0])
-  if status == true {
+	if status == true {
 
-    _, _ = buff1.BlkBuffer.RemoveBlock(index)
-    //BroadCastRemoveBlockBuffer(hsh.HashList[0])
-    //blk.Status = true
-    //BroadCastBlock(blk)
+		_, _ = buff1.BlkBuffer.RemoveBlock(index)
+		//BroadCastRemoveBlockBuffer(hsh.HashList[0])
+		//blk.Status = true
+		//BroadCastBlock(blk)
 
-  } else {
-    fmt.Println("Block Not Found")
-  }
+	} else {
+		fmt.Println("Block Not Found")
+	}
 }
 
 func HandleAddr(conn net.Conn, data []byte) {

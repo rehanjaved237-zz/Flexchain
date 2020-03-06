@@ -2,7 +2,9 @@ package Blockchain
 
 import (
 	"encoding/gob"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"time"
 
 	b "../Block"
@@ -12,7 +14,8 @@ import (
 )
 
 var (
-	Chain1 Blockchain
+	Chain1   Blockchain
+	FileName string
 )
 
 func RegisterAllGobInterfaces() {
@@ -50,6 +53,26 @@ func (a *Blockchain) AddBlock(block b.Block) {
 	}
 
 	a.NoOfBlocks += 1
+
+	//	a.WriteFile()
+}
+
+func (a Blockchain) WriteFile() {
+
+	file, _ := json.MarshalIndent(a, "", " ")
+	_ = ioutil.WriteFile(FileName, file, 0777)
+
+}
+
+func LoadBlockchain() Blockchain {
+	file, err := ioutil.ReadFile(FileName)
+	fmt.Println("Error 1 occured", err)
+
+	data := Blockchain{}
+
+	_ = json.Unmarshal([]byte(file), &data)
+
+	return data
 }
 
 func (a *Blockchain) SliceBlockchain() []b.Block {
