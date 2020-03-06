@@ -177,81 +177,46 @@
         <section>
             <h3 class="product-cart-dn">Shopping</h3>
             <div class="product-list-cart">
-                <div class="product-status-wrap border-pdt-ct" style="margin-left: 15px;">
+                <div class="product-status-wrap border-pdt-ct" style="margin-left: 15px; padding: 15px">
                     <table>
                         <tr>
-                            <th>Face</th>
+                            <th>Image</th>
                             <th>Student Name</th>
                             <th>Grade Awarded</th>
                         </tr>
-                        <tr>
-                            <td><img src="/assets/img/product/1.jpg" alt="" /></td>
+
+                        {{range $idx, $value := .Chain}}
+
+                        <tr style="padding: 20px">
+                            <td><img src="1.jpg" alt="" /></td>
                             <td>
-                                <h3>i160308</h3>
-                                <p>Muhammad Abrar Khan</p>
+                                <h3>{{$value.Content.RollNo}}</h3>
+                                <p>{{$value.Content.Name}}</p>
                             </td>
                             <td>
-                                <input type="text" class="form-control" value="D">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><img src="/assets/img/product/2.jpg" alt="" /></td>
-                            <td>
-                                <h3>i160140</h3>
-                                <p>Muhammad Rehan Javed.</p>
-                            </td>
-                            <td>
-                                <input type="text" class="form-control" value="A+">
+                                <input type="text" class="form-control" value="-">
                             </td>
                         </tr>
-                        <tr>
-                            <td><img src="/assets/img/product/3.jpg" alt="" /></td>
-                            <td>
-                                <h3>i160124</h3>
-                                <p>Hafiz Ahsin Raza</p>
-                            </td>
-                            <td>
-                                <input type="text" class="form-control" value="A">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><img src="/assets/img/product/2.jpg" alt="" /></td>
-                            <td>
-                                <h3>i160001</h3>
-                                <p>Satoshi Nakamoto</p>
-                            </td>
-                            <td>
-                                <input type="text" class="form-control" value="F">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><img src="/assets/img/product/1.jpg" alt="" /></td>
-                            <td>
-                                <h3>i160002</h3>
-                                <p>Magician Sim Asim </p>
-                            </td>
-                            <td>
-                                <input type="text" class="form-control" value="A++">
-                            </td>
-                        </tr>
+
+                          {{end}}
+
                     </table>
-                </div>
-            </div>
-        </section>
 
-        <button style="width: 100%;" type="button" class="btn btn-custon-four btn-success">Generate block</button>
-
-        <div class="footer-copyright-area">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="footer-copy-right">
-                            <p>Flexchain5@gmail.com</p>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="text-center custom-pro-edt-ds">
+                                <input style= "margin-left:0%; width: 25%;" type="submit" class="btn btn-custon-four btn-success" value="Upload Grades" />
+                            </div>
                         </div>
                     </div>
+
+
                 </div>
             </div>
-        </div>
+
+
+        </section>
+
     </div>
     <!-- jquery
 		============================================ -->

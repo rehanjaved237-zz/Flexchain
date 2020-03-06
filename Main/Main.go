@@ -159,6 +159,8 @@ func HodAddStudent1Handler(w http.ResponseWriter, r *http.Request) {
 	} else {
     r.ParseForm()
 
+    photo := r.FormValue("Photo")
+    rollNo := r.FormValue("RollNo")
     name := r.FormValue("Name")
 		fatherName := r.FormValue("FatherName")
     cnic := r.FormValue("CNIC")
@@ -166,6 +168,8 @@ func HodAddStudent1Handler(w http.ResponseWriter, r *http.Request) {
 		department := r.FormValue("Department")
     email := r.FormValue("Email")
 
+    fmt.Println("Photo:", photo)
+    fmt.Println("Rollno:", rollNo)
     fmt.Println("Name:", name)
     fmt.Println("Father Name:", fatherName)
     fmt.Println("CNIC:", cnic)
@@ -174,6 +178,8 @@ func HodAddStudent1Handler(w http.ResponseWriter, r *http.Request) {
     fmt.Println("Email:", email)
 
     newStudent := std1.Student {
+      Photo: photo,
+      RollNo: rollNo,
       Name: name,
       FatherName: fatherName,
       CNIC: cnic,
@@ -275,7 +281,7 @@ func AddToBlockchainHandler(w http.ResponseWriter, r *http.Request) {
 
 func RemoveFromBlockBufferHandler(w http.ResponseWriter, r *http.Request) {
   fmt.Println("RemoveFromBlockBuffer Run")
-  hash := r.URL.Path[len("/removefromblockbuffer"):]
+  hash := r.URL.Path[len("/removefromblockbuffer/"):]
 
   status, index := buff1.BlkBuffer.FindBlock(hash)
   if status == true {
@@ -325,7 +331,7 @@ func TeacherGradeStudentsHandler(w http.ResponseWriter, r *http.Request) {
     Chain []b1.Block
   }{
     w1.FrontEnd,
-    c1.Chain1.FilterBlockchain("Course"),
+    c1.Chain1.FilterBlockchain("Student"),
   }
   err := templates.ExecuteTemplate(w, "TeacherGradeStudents.html", data)
   if err != nil {

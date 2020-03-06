@@ -1,9 +1,12 @@
 package Student
 
 type Student struct {
-  Name string
-  FatherName string
-  CNIC string
-  Phone string
-  Department string
+	Photo      string
+	RollNo     string
+	Name       string
+	FatherName string
+	CNIC       string
+	Phone      string
+	Department string
+	Email      string
 }

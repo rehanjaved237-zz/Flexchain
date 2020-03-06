@@ -43,7 +43,7 @@ type BlockSender struct {
 func StartServer() {
 	c1.RegisterAllGobInterfaces()
 
-	c1.Chain1 = c1.LoadBlockchain()
+	//	c1.Chain1 = c1.LoadBlockchain()
 
 	conn, err := net.Listen(Network, OwnAddress)
 	if err != nil {
